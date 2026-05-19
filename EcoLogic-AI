@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcologicAI | Sentinel Core</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { emerald: { 500: '#10b981' } } } } }
+    </script>
+    <style>
+        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .map-container { height: 500px; width: 100%; border-radius: 1.5rem; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased">
+
+    <!-- Navbar -->
+    <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center font-bold text-slate-900">E</div>
+            <span class="text-xl font-bold tracking-tight">Ecologic<span class="text-emerald-500">AI</span></span>
+        </div>
+        <div class="text-xs font-mono text-slate-500" id="clock">SYSTEM READY</div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left: Map Section -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="glass p-2 map-container shadow-2xl overflow-hidden relative">
+                <div id="map"></div>
+                <div class="absolute top-4 left-4 z-[1000] glass px-4 py-2 rounded-lg text-xs">
+                    <i class="fas fa-satellite text-emerald-500 mr-2"></i> Satellite Link: <span id="gpsStatus">Acquiring...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Control Panel -->
+        <div class="space-y-6">
+            <div class="glass p-6 rounded-3xl space-y-4">
+                <h2 class="text-lg font-bold">Sentinel Engine</h2>
+                <button id="scanBtn" onclick="runProScan()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 rounded-xl transition duration-300">
+                    Execute Sector Scan
+                </button>
+                
+                <!-- Progress Feed -->
+                <div id="progressFeed" class="hidden space-y-2 text-xs font-mono text-slate-400">
+                    <div id="step1">Initializing GPS Uplink...</div>
+                    <div id="step2">Cross-referencing Hydrology Maps...</div>
+                    <div id="step3">Running Microplastic Predictive AI...</div>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div id="resultDashboard" class="hidden grid grid-cols-2 gap-4">
+                <div class="glass p-4 rounded-2xl text-center">
+                    <p class="text-slate-400 text-[10px] uppercase">Concentration</p>
+                    <p class="text-xl font-bold text-emerald-500" id="plasticVal">0.0</p>
+                    <p class="text-[9px] text-slate-500">particles/liter</p>
+                </div>
+                <div class="glass p-4 rounded-2xl text-center">
+                    <p class="text-slate-400 text-[10px] uppercase">Risk Index</p>
+                    <p class="text-xl font-bold text-red-500" id="riskVal">0%</p>
+                    <p class="text-[9px] text-slate-500">Critical Status</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer / Contacts -->
+    <footer class="max-w-7xl mx-auto px-6 py-12 border-t border-slate-900 mt-12 flex flex-col md:flex-row justify-between items-center text-slate-600 text-sm gap-6">
+        <p>&copy; 2026 EcologicAI. All rights reserved.</p>
+        <div class="flex gap-8">
+            <div class="text-center">
+                <p class="text-emerald-500 font-bold">Contact Team</p>
+                <p>team@ecologicai.kz</p>
+            </div>
+            <div class="text-center">
+                <p class="text-emerald-500 font-bold">Support</p>
+                <p>+7 (777) 123-45-67</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map;
+        window.onload = () => navigator.geolocation.getCurrentPosition(initMap);
+
+        function initMap(pos) {
+            document.getElementById('gpsStatus').innerText = "STABLE";
+            map = L.map('map').setView([pos.coords.latitude, pos.coords.longitude], 14);
+            L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { subdomains:['mt0','mt1','mt2','mt3'] }).addTo(map);
+            L.marker([pos.coords.latitude, pos.coords.longitude]).addTo(map).bindPopup("Sentinel Unit Active");
+        }
+
+        async function runProScan() {
+            const btn = document.getElementById('scanBtn');
+            const feed = document.getElementById('progressFeed');
+            const dash = document.getElementById('resultDashboard');
+            
+            btn.disabled = true;
+            feed.classList.remove('hidden');
+            
+            const steps = ['step1', 'step2', 'step3'];
+            for(let step of steps) {
+                document.getElementById(step).style.color = "white";
+                await new Promise(r => setTimeout(r, 800));
+            }
+
+            document.getElementById('plasticVal').innerText = (Math.random() * 50 + 10).toFixed(1);
+            document.getElementById('riskVal').innerText = Math.floor(Math.random() * 40 + 60) + "%";
+            
+            dash.classList.remove('hidden');
+            btn.innerText = "Scan Complete";
+        }
+    </script>
+</body>
+</html>
